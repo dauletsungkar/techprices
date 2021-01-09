@@ -19,10 +19,8 @@ class ProductAdmin(admin.ModelAdmin):
 class UrlInline(admin.StackedInline):
     model = Url
 
-@admin.register(Sulpak)
-class SulpakAdmin(admin.ModelAdmin):
+@admin.register(Shop)
+class ShopAdmin(admin.ModelAdmin):
     list_display = ['name', 'url']
+    inlines = [UrlInline]
 
-@admin.register(BelyiVeter)
-class BelyiVeterAdmin(admin.ModelAdmin):
-    list_display = ['name', 'url']
