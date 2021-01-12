@@ -1,9 +1,9 @@
 from celery import shared_task
-from .models import Shop, Sulpak, BelyiVeter, TechnoDom, Mechta
+from .logic import Shop, Sulpak, BelyiVeter, TechnoDom, Mechta
 
 
 @shared_task
 def update_data():
-    shops = [TechnoDom(), Sulpak(), BelyiVeter(), Mechta()]
+    shops = [Mechta(), TechnoDom(), Sulpak(), BelyiVeter()]
     for shop in shops:
         shop.get_data()
