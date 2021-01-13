@@ -26,7 +26,7 @@ class Parser():
 
 class BelyiVeter(Parser):
     def get_data(self):
-        driver = webdriver.Chrome(ChromeDriverManager().install())
+        driver = webdriver.Chrome('/Users/sungkar/downloads/chromedriver')
         category_urls = Url.objects.filter(shop=1)
         for category_url in category_urls:
             url = category_url.get_url()
@@ -60,7 +60,7 @@ class BelyiVeter(Parser):
 class Sulpak(Parser):
 
     def get_data(self):
-        driver = webdriver.Chrome(ChromeDriverManager().install())
+        driver = webdriver.Chrome('/Users/sungkar/downloads/chromedriver')
         category_urls = Url.objects.filter(shop=2)
         for category_url in category_urls:
             url = category_url.get_url()
@@ -90,7 +90,7 @@ class TechnoDom(Parser):
         for category_url in category_urls:
             url = category_url.get_url()
             category = category_url.get_category()
-            driver = webdriver.Chrome(ChromeDriverManager().install())
+            driver = webdriver.Chrome('/Users/sungkar/downloads/chromedriver')
             driver.get(url)
             content = driver.page_source
             soup = BeautifulSoup(content)
@@ -113,7 +113,7 @@ class TechnoDom(Parser):
 
 class Mechta(Parser):
     def get_data(self):
-        driver = webdriver.Chrome(ChromeDriverManager().install())
+        driver = webdriver.Chrome('/Users/sungkar/downloads/chromedriver')
         category_urls = Url.objects.filter(shop=4)
         for category_url in category_urls:
             url = category_url.get_url()
