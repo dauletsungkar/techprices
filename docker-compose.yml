@@ -37,3 +37,12 @@ services:
       - redis
       - web
       - db
+  selenium:
+    image: selenium/standalone-chrome
+    ports:
+      - "4444:4444"
+    depends_on:
+      - redis
+      - web
+      - db
+      

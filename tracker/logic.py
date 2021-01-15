@@ -1,5 +1,6 @@
 from .models import Product, Price, Shop, Url
 from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 
@@ -19,15 +20,16 @@ class Parser():
                     cost=cost, product_id=product.id, shop_id=shop)
         except Product.DoesNotExist:
             product = Product.objects.create(
-                name=product_name, category_id=category)
+                name=product_name, category_id=category.id)
             Price.objects.create(
                 cost=cost, product_id=product.id, shop_id=shop)
 
 
 class BelyiVeter(Parser):
     def get_data(self):
-        driver = webdriver.Chrome('/Users/sungkar/downloads/chromedriver')
-        category_urls = Url.objects.filter(shop=1)
+        driver = webdriver.Remote(
+            "http://selenium:4444/wd/hub", DesiredCapabilities.CHROME)
+        category_urls = Url.objects.filter(shop=4)
         for category_url in category_urls:
             url = category_url.get_url()
             category = category_url.get_category()
@@ -46,8 +48,7 @@ class BelyiVeter(Parser):
                         price = int(price[1])
                     else:
                         price = int(price[0])
-                    super().update_data(name, price, category, 1)
-                    print(name, price)
+                    super().update_data(name, price, category, 4)
                 nxt = driver.find_elements_by_xpath(
                     '//li[@class="bx-pag-next"]/a')
                 if(len(nxt) > 0):
@@ -60,7 +61,8 @@ class BelyiVeter(Parser):
 class Sulpak(Parser):
 
     def get_data(self):
-        driver = webdriver.Chrome('/Users/sungkar/downloads/chromedriver')
+        driver = webdriver.Remote(
+            "http://selenium:4444/wd/hub", DesiredCapabilities.CHROME)
         category_urls = Url.objects.filter(shop=2)
         for category_url in category_urls:
             url = category_url.get_url()
@@ -74,7 +76,6 @@ class Sulpak(Parser):
                     price = int(float(product.get_attribute('data-price')))
                     if 'Нет в наличии' not in product.text and price > 0:
                         super().update_data(name, price, category, 2)
-                        print(name, price)
 
                 nxt = driver.find_elements_by_xpath('//a[@class="next"]')
                 if len(nxt) > 0:
@@ -86,11 +87,12 @@ class Sulpak(Parser):
 
 class TechnoDom(Parser):
     def get_data(self):
-        category_urls = Url.objects.filter(shop=3)
+        category_urls = Url.objects.filter(shop=1)
         for category_url in category_urls:
             url = category_url.get_url()
             category = category_url.get_category()
-            driver = webdriver.Chrome('/Users/sungkar/downloads/chromedriver')
+            driver = webdriver.Remote(
+                "http://selenium:4444/wd/hub", DesiredCapabilities.CHROME)
             driver.get(url)
             content = driver.page_source
             soup = BeautifulSoup(content)
@@ -106,15 +108,15 @@ class TechnoDom(Parser):
                             cost = cost * 10 + int(i)
                     except ValueError:
                         continue
-                super().update_data(name.text, cost, category, 3)
-                print(name, cost)
+                super().update_data(name.text, cost, category, 1)
             driver.quit()
 
 
 class Mechta(Parser):
     def get_data(self):
-        driver = webdriver.Chrome('/Users/sungkar/downloads/chromedriver')
-        category_urls = Url.objects.filter(shop=4)
+        driver = webdriver.Remote(
+            "http://selenium:4444/wd/hub", DesiredCapabilities.CHROME)
+        category_urls = Url.objects.filter(shop=3)
         for category_url in category_urls:
             url = category_url.get_url()
             category = category_url.get_category()
@@ -136,6 +138,5 @@ class Mechta(Parser):
                             cost = cost * 10 + int(i)
                     except ValueError:
                         continue
-                super().update_data(name, cost, category, 4)
-                print(name, cost)
+                super().update_data(name, cost, category, 3)
         driver.quit()

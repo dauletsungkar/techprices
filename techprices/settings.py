@@ -143,6 +143,7 @@ CELERY_TIMEZONE = 'Asia/Almaty'
 
 CACHES = {
     'default': {
-    'BACKEND': 'django_redis.cache.RedisCache',
-    'LOCATION': 'redis://redis:6379', }
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://redis:6379',
+    }
 }
