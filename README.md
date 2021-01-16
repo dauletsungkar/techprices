@@ -29,46 +29,11 @@ get_data(), он соберет все данные и вызовет метод
 
 #How to start?
 
-Создайте виртуальную среду
+Из корня проекта запустите
 
-`python -m venv venv`
+`docker-compose build`
 
-Запустите ее
+Теперь можете запускать проект 
 
-`source venv/bin/activate`
-
-С помощью pip установите:
-
-`django`
-
-`celery`
-
-`django_celery_beat`
-
-`selenium`
-
-`beautifulsoup4`
-
-`django_restframework`
-
-`webdriver_manager`
-
-Установите redis
-
-https://redis.io
-
-Запустите проект
-
-`python manage.py runserver`
-
-Запустите сервер redis
-
-`redis-server`
-
-Запустите celery worker
-
-`celery -A techprices worker -l INFO`
-
-Запустите celery beat
-
-`celery -A techprices beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler`
+`docker-compose up`
+ 
