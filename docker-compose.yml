@@ -38,7 +38,7 @@ services:
       - web
       - db
   selenium:
-    image: selenium/standalone-chrome
+    image: selenium/standalone-firefox:latest
     ports:
       - "4444:4444"
     depends_on:
