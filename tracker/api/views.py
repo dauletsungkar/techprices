@@ -37,7 +37,7 @@ class CategoryMinPrice(generics.GenericAPIView):
         mn_price = product.product_prices.latest('date').get_cost()
         for shop in shops:
             try:
-                price = product.product_prices.filter(
+                price = product.prices.filter(
                     shop=shop).latest('date').get_cost()
                 mn_price = min(mn_price, price)
             except Price.DoesNotExist:
@@ -68,7 +68,7 @@ class CategoryMaxPrice(generics.GenericAPIView):
     def get_maxprice(self, product):
         """Returns maximal price of product"""
         shops = Shop.objects.all()
-        mx_price = product.product_prices.latest('date').get_cost()
+        mx_price = product.prices.latest('date').get_cost()
         for shop in shops:
             try:
                 price = product.product_prices.filter(

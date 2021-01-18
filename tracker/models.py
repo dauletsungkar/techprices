@@ -38,7 +38,7 @@ class Price(models.Model):
     cost = models.IntegerField()
     date = models.DateTimeField(auto_now_add=True)
     product = models.ForeignKey(
-        Product, related_name='product_prices', on_delete=models.CASCADE)
+        Product, related_name='prices', on_delete=models.CASCADE)
     shop = models.ForeignKey(
         Shop, related_name='shop_prices', on_delete=models.CASCADE)
 

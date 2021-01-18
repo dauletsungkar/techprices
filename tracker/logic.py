@@ -13,7 +13,7 @@ class Parser():
         try:
             product = Product.objects.get(name=product_name)
             try:
-                current_price = product.product_prices.filter(
+                current_price = product.prices.filter(
                     shop=shop).latest('date')
                 if current_price.get_cost() != cost:
                     Price.objects.create(

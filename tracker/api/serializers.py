@@ -8,7 +8,7 @@ class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         """This meta class specifies which model and which fields to serialize"""
         model = Shop
-        fields = ['id', 'name', 'url']
+        fields = ['name']
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -26,7 +26,7 @@ class PriceSerializer(serializers.ModelSerializer):
     class Meta:
         """This meta class specifies which model and which fields to serialize"""
         model = Price
-        fields = ['id', 'cost', 'date', 'product', 'shop']
+        fields = ['cost', 'shop']
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -41,10 +41,9 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class ProductWithPricesSerializer(serializers.ModelSerializer):
     """Product serializer for detail view to show all prices"""
-    product_prices = PriceSerializer(many=True, read_only=True)
-    category = CategorySerializer(read_only=True)
+    prices = PriceSerializer(many=True, read_only=True)
 
     class Meta:
         """This meta class specifies which model and which fields to serialize"""
         model = Product
-        fields = ['id', 'name', 'category', 'product_prices']
+        fields = ['name', 'prices']
