@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_celery_beat',
     'rest_framework',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -134,7 +135,7 @@ REST_FRAMEWORK = {
 }
 # Celery settings
 CELERY_BROKER_URL = 'redis://redis:6379'
-CELERY_RESULT_BACLEND = 'redis://redis:6379'
+CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
