@@ -1,6 +1,6 @@
 """This module configures the capabilities of the admin page"""
 from django.contrib import admin
-from .models import Product, Category, Price, Shop, Url
+from .models import Product, Category, Price, Shop, Url, Hash
 
 
 @admin.register(Category)
@@ -14,8 +14,8 @@ class PriceInline(admin.StackedInline):
     model = Price
 
 
-@admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+@admin.register(Hash)
+class HashAdmin(admin.ModelAdmin):
     """Add a product model to the admin page"""
     list_display = ['name', 'category']
     inlines = [PriceInline]

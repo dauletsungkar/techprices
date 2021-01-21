@@ -37,3 +37,7 @@ django-redis==4.12.1
 pytest-django==4.1.0
 pylint==2.6.0
 django-celery-results==2.0.0
+tensorflow==2.4.0
+tensorflow-hub==0.11.0
+numpy==1.19.5
+google-cloud-bigquery==2.6.2

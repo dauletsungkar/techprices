@@ -2,30 +2,36 @@
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium import webdriver
 from bs4 import BeautifulSoup
-from .models import Product, Price, Url
+from .tasks import send_hash_to_bq, send_price_to_bq, match
+from .models import Product, Price, Url, Shop
 
 
 class Parser():
     """This is the main super class from which all store classes inherit."""
-    def update_data(self, product_name, cost, category, shop):
+    def update_data(self, product_name, cost, category, shop_id):
         """This method updates the prices of goods if they have changed,
         or adds if the goods were not there before"""
+        shop_name = Shop.objects.get(pk=shop_id).get_name()
         try:
             product = Product.objects.get(name=product_name)
+            hash = product.get_hash()
             try:
                 current_price = product.prices.filter(
-                    shop=shop).latest('date')
+                    shop=shop_id).latest('date')
                 if current_price.get_cost() != cost:
-                    Price.objects.create(
-                        cost=cost, product_id=product.id, shop_id=shop)
+                    price = Price.objects.create(
+                        cost=cost, product_id=product.id, shop_id=shop_id)
+                    send_price_to_bq.dela(cost=cost, date=price.get_date(), shop=shop_name, hash=hash.get_name())
             except Price.DoesNotExist:
-                Price.objects.create(
-                    cost=cost, product_id=product.id, shop_id=shop)
+                price = Price.objects.create(
+                    cost=cost, product_id=product.id, shop_id=shop_id)
+                send_price_to_bq.dela(cost=cost, date=price.get_date(), shop=shop_name, hash=hash.get_name())
         except Product.DoesNotExist:
-            product = Product.objects.create(
-                name=product_name, category_id=category.id)
-            Price.objects.create(
-                cost=cost, product_id=product.id, shop_id=shop)
+            match.delay(name=product_name, category_id=category.id,cost=cost,shop_id=shop_id)
+            # product = Product.objects.create(
+            #     name=product_name, category_id=category.id)
+            # Price.objects.create(
+            #     cost=cost, product_id=product.id, shop_id=shop_id)
 
 
 class BelyiVeter(Parser):

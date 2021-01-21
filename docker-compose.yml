@@ -30,6 +30,8 @@ services:
       - redis
       - web
       - db
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=techprices-10316bbbb8d8.json
   celery_beat:
     build: .
     command: celery -A techprices beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
