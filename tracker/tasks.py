@@ -42,51 +42,46 @@ def send_price_to_bq(cost, date, shop, hash):
 @shared_task
 def match(name, category_id, cost, shop_id):
     """Match products by name"""
-    import tensorflow_hub as hub
-    import numpy as np
-    module_url = "https://tfhub.dev/google/universal-sentence-encoder/4"
-    model = hub.load(module_url)
-    # sentences = [
-    #     'Ноутбук Apple MacBook Pro Touch Bar Retina 16 i7 9750H / 16ГБ / 512SSD / Radeon Pro 5300M 4ГБ / 16 / MacOS Catalina / (MVVJ2RU/A)']
-    # sentence_embeddings = model(sentences)
-    # query = 'НОУТБУК APPLE MACBOOK PRO 16" SPACE GREY (MVVJ2)'
-    # query_vec = model([query])[0]
-    #
-    # def cosine(u, v):
-    #     return np.dot(u, v) / (np.linalg.norm(u) * np.linalg.norm(v))
-    #
-    # for sent in sentences:
-    #     sim = cosine(query_vec, model([sent])[0])
-    #     print("Sentence = ", sent, "; similarity = ", sim)
-    # import tensorflow as tf
-    # import tensorflow_hub as hub
-    # import numpy as np
-    # from .models import Hash, Product, Price, Shop, Category
-    # module_url = "https://tfhub.dev/google/universal-sentence-encoder/4"
-    # model = hub.load(module_url)
-    # hashes = Hash.objects.all()
-    # sentences = [hash.get_name() for hash in hashes]
-    # sentence_embeddings = model(sentences)
-    # query = name
-    # query_vec = model([query])[0]
-    #
-    # def cosine(u, v):
-    #     return np.dot(u, v) / (np.linalg.norm(u) * np.linalg.norm(v))
-    #
-    # f = True
-    # shop_name = Shop.objects.get(pk=shop_id).get_name()
-    # category_name = Category.objects.get(pk=category_id).get_name()
-    # for sent in sentences:
-    #     sim = cosine(query_vec, model([sent.get_name()])[0])
-    #     if sim >= 0.90:
-    #         Product.objects.create(name=name,category_id=category_id,hash_id=sent.id)
-    #         price = Price.objects.create(cost=cost,shop_id=shop_id,hash_id=sent.id)
-    #         send_price_to_bq.delay(cost=cost, date=price.get_date(), shop=shop_name, product=sent.get_name())
-    #         f = False
-    #         break
-    # if f:
-    #     hash = Hash.objects.create(name=name,category_id=category_id)
-    #     Product.objects.create(name=name, category_id=category_id, hash_id=hash.id)
-    #     price = Price.objects.create(cost=cost, shop_id=shop_id, hash_id=hash.id)
-    #     send_hash_to_bq.delay(name=name, category=category_name)
-    #     send_price_to_bq.delay(cost=cost, date=price.get_date(), shop=shop_name, product=hash.get_name())
+    import math
+    import re
+    from collections import Counter
+    from .models import Product, Hash, Price, Shop, Category
+    WORD = re.compile(r"\w+")
+
+    def get_cosine(vec1, vec2):
+        intersection = set(vec1.keys()) & set(vec2.keys())
+        numerator = sum([vec1[x] * vec2[x] for x in intersection])
+
+        sum1 = sum([vec1[x] ** 2 for x in list(vec1.keys())])
+        sum2 = sum([vec2[x] ** 2 for x in list(vec2.keys())])
+        denominator = math.sqrt(sum1) * math.sqrt(sum2)
+
+        if not denominator:
+            return 0.0
+        else:
+            return float(numerator) / denominator
+
+    def text_to_vector(text):
+        words = WORD.findall(text)
+        return Counter(words)
+
+    f = True
+    shop_name = Shop.objects.get(pk=shop_id).get_name()
+    category_name = Category.objects.get(pk=category_id).get_name()
+    vector1 = text_to_vector(name)
+    sentences = Hash.objects.all()
+    for sent in sentences:
+        vector2 = text_to_vector(sent.get_name())
+        sim = get_cosine(vector1, vector2)
+        if sim >= 0.90:
+            Product.objects.create(name=name,category_id=category_id,hash_id=sent.id)
+            price = Price.objects.create(cost=cost,shop_id=shop_id,hash_id=sent.id)
+            send_price_to_bq.delay(cost=cost, date=price.get_date(), shop=shop_name, hash=sent.get_name())
+            f = False
+            break
+    if f:
+        hash = Hash.objects.create(name=name,category_id=category_id)
+        Product.objects.create(name=name, category_id=category_id, hash_id=hash.id)
+        price = Price.objects.create(cost=cost, shop_id=shop_id, hash_id=hash.id)
+        send_hash_to_bq.delay(name=name, category=category_name)
+        send_price_to_bq.delay(cost=cost, date=price.get_date(), shop=shop_name, hash=hash.get_name())

@@ -16,22 +16,24 @@ class Parser():
             product = Product.objects.get(name=product_name)
             hash = product.get_hash()
             try:
-                current_price = product.prices.filter(
+                current_price = hash.prices.filter(
                     shop=shop_id).latest('date')
                 if current_price.get_cost() != cost:
                     price = Price.objects.create(
-                        cost=cost, product_id=product.id, shop_id=shop_id)
-                    send_price_to_bq.dela(cost=cost, date=price.get_date(), shop=shop_name, hash=hash.get_name())
+                        cost=cost, hash_id=hash.id, shop_id=shop_id)
+                    send_price_to_bq.delay(cost=cost, date=price.get_date(), shop=shop_name, hash=hash.get_name())
             except Price.DoesNotExist:
                 price = Price.objects.create(
-                    cost=cost, product_id=product.id, shop_id=shop_id)
-                send_price_to_bq.dela(cost=cost, date=price.get_date(), shop=shop_name, hash=hash.get_name())
+                    cost=cost, hash_id=hash.id, shop_id=shop_id)
+                send_price_to_bq.delay(cost=cost, date=price.get_date(), shop=shop_name, hash=hash.get_name())
         except Product.DoesNotExist:
             match.delay(name=product_name, category_id=category.id,cost=cost,shop_id=shop_id)
             # product = Product.objects.create(
             #     name=product_name, category_id=category.id)
-            # Price.objects.create(
+            # price = Price.objects.create(
             #     cost=cost, product_id=product.id, shop_id=shop_id)
+            # send_hash_to_bq.delay(name=product_name, category=category.get_name())
+            # send_price_to_bq.delay(cost=cost, date=price.get_date(), shop=shop_name, hash=product_name)
 
 
 class BelyiVeter(Parser):
