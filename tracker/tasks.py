@@ -18,7 +18,7 @@ def send_hash_to_bq(name, category):
     rows_to_insert = [
         {u"name": name, u"category": category}
     ]
-    errors = client.insert_rows_json('techprices.tracker.hashes', rows_to_insert)
+    errors = client.insert_rows_json('techprices-302502.tracker.hashes', rows_to_insert)
     if errors == []:
         print("New rows have been added.")
     else:
@@ -32,7 +32,7 @@ def send_price_to_bq(cost, date, shop, hash):
     rows_to_insert = [
         {u"cost": cost, u"date": date, u"shop": shop, u"hash": hash}
     ]
-    errors = client.insert_rows_json('techprices.tracker.prices', rows_to_insert)
+    errors = client.insert_rows_json('techprices-302502.tracker.prices', rows_to_insert)
     if errors == []:
         print("New rows have been added.")
     else:

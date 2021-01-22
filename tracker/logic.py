@@ -28,12 +28,6 @@ class Parser():
                 send_price_to_bq.delay(cost=cost, date=price.get_date(), shop=shop_name, hash=hash.get_name())
         except Product.DoesNotExist:
             match.delay(name=product_name, category_id=category.id,cost=cost,shop_id=shop_id)
-            # product = Product.objects.create(
-            #     name=product_name, category_id=category.id)
-            # price = Price.objects.create(
-            #     cost=cost, product_id=product.id, shop_id=shop_id)
-            # send_hash_to_bq.delay(name=product_name, category=category.get_name())
-            # send_price_to_bq.delay(cost=cost, date=price.get_date(), shop=shop_name, hash=product_name)
 
 
 class BelyiVeter(Parser):

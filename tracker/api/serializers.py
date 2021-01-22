@@ -1,6 +1,6 @@
 """This module describes model serializers"""
 from rest_framework import serializers
-from ..models import Product, Category, Price, Shop
+from ..models import Product, Category, Price, Shop, Hash
 
 
 class ShopSerializer(serializers.ModelSerializer):
@@ -29,21 +29,21 @@ class PriceSerializer(serializers.ModelSerializer):
         fields = ['cost', 'shop']
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class HashSerializer(serializers.ModelSerializer):
     """Product serializer"""
     category = CategorySerializer(read_only=True)
 
     class Meta:
         """This meta class specifies which model and which fields to serialize"""
-        model = Product
+        model = Hash
         fields = ['id', 'name', 'category']
 
 
-class ProductWithPricesSerializer(serializers.ModelSerializer):
+class HashWithPricesSerializer(serializers.ModelSerializer):
     """Product serializer for detail view to show all prices"""
     prices = PriceSerializer(many=True, read_only=True)
 
     class Meta:
         """This meta class specifies which model and which fields to serialize"""
-        model = Product
+        model = Hash
         fields = ['name', 'prices']
