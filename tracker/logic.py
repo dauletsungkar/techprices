@@ -2,7 +2,7 @@
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium import webdriver
 from bs4 import BeautifulSoup
-from .tasks import send_hash_to_bq, send_price_to_bq, match
+from .tasks import match
 from .models import Product, Price, Url, Shop
 
 
@@ -19,13 +19,11 @@ class Parser():
                 current_price = hash.prices.filter(
                     shop=shop_id).latest('date')
                 if current_price.get_cost() != cost:
-                    price = Price.objects.create(
+                     Price.objects.create(
                         cost=cost, hash_id=hash.id, shop_id=shop_id)
-                    send_price_to_bq.delay(cost=cost, date=price.get_date(), shop=shop_name, hash=hash.get_name())
             except Price.DoesNotExist:
-                price = Price.objects.create(
+                Price.objects.create(
                     cost=cost, hash_id=hash.id, shop_id=shop_id)
-                send_price_to_bq.delay(cost=cost, date=price.get_date(), shop=shop_name, hash=hash.get_name())
         except Product.DoesNotExist:
             match.delay(name=product_name, category_id=category.id,cost=cost,shop_id=shop_id)
 
